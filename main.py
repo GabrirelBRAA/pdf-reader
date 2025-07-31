@@ -160,12 +160,11 @@ async def ask_pdf(question: ChatQuestion, session: SessionDep):
     if history is None:
         history = []
     #history.append({"role": "user", "content": question.question})
+    history.insert(0, {"role": "system", "content": "You are a helpful assistant that answers questions based on snippets from a pdf file. Always try to reference the given context to answer the user. If you don't know the answer, say so."})
+    history.append({"role": "user", "content": f"Question: {question}\nContext: {context}"})
 
     response = llm_client.chat.completions.create(
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that answers questions based on snippets from a pdf file. Always try to reference the given context to answer the user. If you don't know the answer, say so."},
-            {"role": "user", "content": f"Question: {question}\nContext: {context}\n Chat History: {question.history}"}
-            ],
+        messages=history,
         response_model=str
     )
 
